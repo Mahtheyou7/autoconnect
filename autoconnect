@@ -1,47 +1,47 @@
 #!/usr/bin/env bash
-nmcli con show --active | tee screen.log
+nmcli con show --active | tee screen.log    # scan for active connections | and log names to screen.log
 if
-  grep -w "30a8a6b3-683b-4fd5-94c1-d155f1841120" screen.log
+  grep -w "30a8a6b3-683b-4fd5-94c1-d155f1841120" screen.log # read log file for active connection (wifi)
 then
   echo "WIFI is enabled"
 elif
-  ping -c1 google.com >/dev/null
+  ping -c1 google.com >/dev/null # check for actual connection
 then
   notify-send "WIFI connected"
-  nmcli device disconnect 28:C7:09:9D:C8:5E
-  declare -i DEFAULT_TIMEOUT=9
-  declare -i DEFAULT_INTERVAL=1
-  declare -i DEFAULT_DELAY=1
+  nmcli device disconnect 28:C7:09:9D:C8:5E # disconnect hotspot (because don't need)
+  declare -i DEFAULT_TIMEOUT=9     #
+  declare -i DEFAULT_INTERVAL=1    # this is an attempt to close the script because condition(internet) is met.
+  declare -i DEFAULT_DELAY=1       #
   sleep 10
 else
   notify-send "Enabling WIFI"
-  nmcli radio wifi on
-  nmcli device disconnect 28:C7:09:9D:C8:5E
+  nmcli radio wifi on            # enabling wifi
+  nmcli device disconnect 28:C7:09:9D:C8:5E  # make sure we dont proc the hotspot, and keep it off
   echo "Please wait"
-  sleep 7
+  sleep 7 # wait for wifi to enable and connect
 fi
 
 if
-  ping -c1 google.com >/dev/null
+  ping -c1 google.com >/dev/null # check if it connects
 then
   Notify-send "WIFI Enabled successfully"
-  nmcli device disconnect 28:C7:09:9D:C8:5E
+  nmcli device disconnect 28:C7:09:9D:C8:5E # another redundancy
   declare -i DEFAULT_TIMEOUT=9
-  declare -i DEFAULT_INTERVAL=1
+  declare -i DEFAULT_INTERVAL=1  # also to kill the script (I need help with this)
   declare -i DEFAULT_DELAY=1
   sleep 20
 else
-  bluetoothctl connect 28:C7:09:9D:C8:5E
+  bluetoothctl connect 28:C7:09:9D:C8:5E # if the wifi fails, we make sure bluetooth is on
   notify-send "No WIFI available - Enabling Hotspot"
   nmcli radio wifi off
-  nmcli device connect 28:C7:09:9D:C8:5E
-  sleep 3
+  nmcli device connect 28:C7:09:9D:C8:5E # and connect to it's hotspot
+  sleep 3 # wait for hotspot to init
 fi
 if
-  ping -c1 google.com >/dev/null
+  ping -c1 google.com >/dev/null # check connection
 then
   notify-send "Connection successful"
 else
   notify-send "No connections are available - bluetooth may be disabled"
-  nmcli device disconnect 28:C7:09:9D:C8:5E
+  nmcli device disconnect 28:C7:09:9D:C8:5E # disable because it didn't work
 fi
