@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-nmcli con show --active | tee screen.log    # scan for active connections | and log names to screen.log
+nmcli con show --active | tee screen.log
+nmcli device disconnect 28:C7:09:9D:C8:5E
 if
   grep -w "30a8a6b3-683b-4fd5-94c1-d155f1841120" screen.log # read log file for active connection (wifi)
 then
